@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+      xmlns:mvc = "http://www.springframework.org/schema/mvc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+           http://www.springframework.org/schema/mvc
+           http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+    <!-- Load properties file -->
+    <!-- <context:property-placeholder location="file:E:\VUS\VehicleUtilization-master\SMS-Config" /> -->
+
+    <!-- Component scanning -->
+    <context:component-scan base-package="com.project.millatinventory.controller"/>
+
+    <!-- Enable annotation-driven transaction management -->
+    <tx:annotation-driven transaction-manager="mySQLTransactionManager" />
+
+    <!-- Enable Spring MVC annotations -->
+    <mvc:annotation-driven />
+
+    <!-- View Resolvers -->
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass"
+                  value="org.springframework.web.servlet.view.tiles2.TilesView" />
+        <property name="order" value="0" />
+    </bean>
+
+    <bean id="jspViewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+        <property name="prefix" value="/WEB-INF/views/" />
+        <property name="suffix" value=".jsp" />
+        <property name="order" value="1" />
+    </bean>
+
+    <!-- MySQL DataSource -->
+    <!-- <bean id="mySQLDataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${mysql.database.driver}" />
+        <property name="url" value="${mysql.database.url}" />
+        <property name="username" value="${mysql.database.user}" />
+        <property name="password" value="${mysql.database.password}" />
+    </bean> -->
+<bean id="mySQLDataSource"
+      class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+    <property name="url" value="jdbc:mysql://localhost:3306/v_u_system?useSSL=false;serverTimezone=UTC;"/>
+    <property name="username" value="root"/>
+    <property name="password" value="Abdul@123" />
+</bean>
+
+    <!-- Hibernate SessionFactory -->
+    <bean id="mySQLSessionFactory"
+          class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="mySQLDataSource" />
+        <property name="annotatedClasses">
+            <list>
+                <value>com.project.millatinventory.model.BaseBean</value>
+                <value>com.project.millatinventory.model.Users</value>
+                <value>com.project.millatinventory.model.DataEntry</value>
+                <value>com.project.millatinventory.model.Vehicle</value>
+                <value>com.project.millatinventory.model.Sites</value>
+                <value>com.project.millatinventory.model.Moter</value>
+                <value>com.project.millatinventory.model.Expenses</value>
+                <value>com.project.millatinventory.model.Vendors</value>
+                <value>com.project.millatinventory.model.DataEntryExpense</value>
+            </list>
+        </property>
+       <!--  <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">${mysql.hibernate.dialect}</prop>
+                <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+            </props>
+        </property> -->
+         <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- Hibernate Transaction Manager -->
+    <bean id="mySQLTransactionManager"
+          class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="mySQLSessionFactory" />
+    </bean>
+
+    <!-- Tiles Configurer -->
+    <bean id="tilesConfigurer"
+          class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+        <property name="definitions">
+            <list>
+                <value>/WEB-INF/tiles.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Multipart Resolver -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1000000" />
+    </bean>
+
+    <!-- Message Source -->
+    <bean id="messageSource"
+          class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="/WEB-INF/messages" />
+    </bean>
+
+    <!-- JdbcTemplate Bean -->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="mySQLDataSource" />
+    </bean>
+
+</beans>
